@@ -1,0 +1,109 @@
+/* NavBar.css */
+
+/* Menu Toggle Button */
+.menu-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    left: 25px;
+    z-index: 1000;
+    background-color: #4A90E2;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+  }
+  
+  .menu-toggle:hover {
+    background-color: tomato;
+  }
+  
+  /* Navigation Menu */
+  .nav-icons {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 500;
+    background-color: #2d3748;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    width: 250px;
+  }
+  
+  /* When the navbar is open */
+  .nav-icons.open {
+    transform: translateX(0);
+  }
+  
+  /* Navbar Links */
+  .nav-icons nav {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .nav-link {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .nav-link:hover {
+    background-color: #3c4b61;
+    color: #63b3ed;
+    transform: scale(1.05);
+  }
+  
+  /* Label for each nav item */
+  .nav-label {
+    margin-left: 10px;
+    font-size: 16px;
+  }
+  
+  /* Tablet and smaller desktop screens */
+  @media (max-width: 1024px) {
+    .nav-icons {
+      padding: 15px 10px;
+      width: 200px;
+    }
+  
+    .nav-link {
+      font-size: 20px;
+    }
+  
+    .nav-label {
+      font-size: 14px;
+    }
+  }
+  
+  /* Mobile screens */
+  @media (max-width: 768px) {
+    .nav-icons {
+      padding: 20px 15px;
+      width: 180px;
+    }
+  
+    .nav-link {
+      font-size: 18px;
+    }
+  
+    .menu-toggle {
+      top: 10px;
+      left: 15px;
+    }
+  }
+  

@@ -1,0 +1,233 @@
+/* Variables */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --background-color: #f5f5f5;
+  --text-color: #333;
+  --input-bg: #ffffff;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+} 
+.main {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 100vh;
+  width: 100vw; /* Make full width */
+  position: relative;
+  overflow: hidden;
+  background-color: var(--background-color);
+  overflow: hidden;
+}
+
+/* Map */
+.map {
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  scrollbar-width: none;
+}
+
+.sidebar {
+  height: 80%; 
+  position: fixed;
+  top: 50px;
+  z-index: 1001;
+  transition: left 0.5s ease; 
+}
+
+/* Input container */
+.container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 438px;
+  width: 250px;
+  z-index: 1000;
+  position: absolute;
+  top: 15px;
+  left: 65px;
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+/* Input fields */
+.startPoint, .endPoint {
+  position: relative;
+  z-index: 1000;
+  margin-bottom: 10px;
+  animation: fadeIn 0.5s ease-out;
+}
+.startPoint input{
+  margin-top: 16px;
+}
+.startPoint input, .endPoint input {
+  width: 250px;
+  height: 34px;
+  margin-left: 40px;
+  border-radius: 10%;
+  padding: 10px 15px;
+  background-color: var(--input-bg);
+  border: 1px solid #ddd;
+  font-size: 14px;
+  transition: var(--transition);
+}
+.search-result{
+  position: "relative";
+  height:390px;
+  width: 100%;
+  background-color: white;
+  margin-top: -4px;
+  border-radius: 0.375rem;
+  z-index: 1000;
+  box-shadow:0 2px 10px rgba(0, 0, 0, 0.1); 
+  overflow-y: auto;
+  overflow-x:hidden
+}
+.startPoint input:focus, .endPoint input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* Information paragraphs */
+.main > p {
+  position: absolute;
+  background: rgb(255, 255, 255);
+  padding: 8px 15px;
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  margin: 0;
+  font-size: 14px;
+color: black;
+  transition: var(--transition);
+}
+
+.main > p:first-of-type {
+  bottom: 80px;
+  right: 20px;
+}
+
+.main > p:last-of-type {
+  bottom: 40px;
+  right: 20px;
+}
+
+.main > p:hover {
+  transform: scale(1.05);
+  background-color: var(--primary-color);
+  color: white;
+}
+.error-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  background-color: #ff4b4b;
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50px);
+  transition: visibility 0s, opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.animated-alert {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  animation: shake 0.6s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-10px);
+  }
+  40%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.userloc {
+  animation: pulse 2s infinite;
+}
+@media (max-width: 1024px) {
+  .container {
+    width: 300px;
+  }
+  
+  .map {
+    height: 100vh;
+  }
+}
+@media screen and (max-width: 992px) {
+  .container {
+    width: 300px;
+  }
+
+  .sidebar {
+    width: 220px;
+  }
+}
+@media (max-width: 700px) {
+  .main {
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .container {
+      width: 100%;
+      position: relative;
+      margin-top: -4px;
+      margin-left: 18px;
+      padding: 0.5rem;
+  }
+  .startPoint, .endPoint {
+    position: relative;
+    z-index: 1000;
+  }
+  
+  .startPoint input, .endPoint input {
+    width: 48%;
+    height: 35px;
+  }
+  .map {
+    height:100vh;
+  }
+  .sidebar{
+   width: 60px;
+  }
+  .search-result {
+    width: 40%,
+  }
+}
+@media (max-width:470px){
+  .search-result{
+   margin-top: -10px;
+    width: 56%;
+    margin-left: 23px;
+    border-radius: 16px;
+  }
+}
