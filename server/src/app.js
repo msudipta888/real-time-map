@@ -6,7 +6,7 @@ const axios = require("axios"); // Use axios for consistency
 require('dotenv').config();
 const app = express();
 const { stringify } = require("querystring");
-const { getNearByPlacesRoute } = require("./router");
+const { getNearByPlacesRoute } = require("../router");
 const mongoose  = require("mongoose");
 
 const jwt = require('jsonwebtoken');
@@ -168,7 +168,7 @@ io.on("connection", (socket) => {
 
 
 app.use("/nearby-places", getNearByPlacesRoute);
-app.use('/users',require('./routes/authRoutes'));
+app.use('/users',require('../routes/authRoutes'));
 
 // Server start
 const PORT = 3001;
