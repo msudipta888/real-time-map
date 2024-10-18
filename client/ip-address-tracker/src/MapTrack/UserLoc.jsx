@@ -18,7 +18,7 @@ const UserLoc = ({setPlaceName}) => {
   const token = localStorage.getItem("token")
   useEffect(() => {
     try{
-    socketRef.current = io('http://localhost:3001',{
+    socketRef.current = io('https://real-time-map-6jrp.onrender.com',{
       auth:{
         token:token
       }

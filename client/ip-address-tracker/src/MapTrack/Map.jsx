@@ -108,7 +108,7 @@ const Map = () => {
       const token = localStorage.getItem("token");
       try {
 
-         socket =io("http://localhost:3001",{
+         socket =io("https://real-time-map-6jrp.onrender.com",{
           auth:{
             token:token
           }

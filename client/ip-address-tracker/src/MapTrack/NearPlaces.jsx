@@ -85,7 +85,7 @@ const [error,setError] =useState(null)
     dispatch({ type: actions.SET_LOADING, payload: true });
     try {
       const { data } = await axios.post(
-        "http://localhost:3001/nearby-places/location",
+        "https://real-time-map-6jrp.onrender.com/nearby-places/location",
         { place: place.address, category, distance },{
           headers:{
             "auth-token":localStorage.getItem("token"),
@@ -298,7 +298,7 @@ const [error,setError] =useState(null)
           />
         )}
 
-        {state.nearbyPlaces.map((place) => (
+        {Array.isArray(state.nearbyPlaces) && state.nearbyPlaces.map((place) => (
           <Marker
             key={place.id}
             position={[place.lat, place.lon]}
