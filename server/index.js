@@ -20,8 +20,7 @@ const getLatLng = async (place) => {
 };
 
 const getNearByPlaces = async (req, res) => {
-  const { place, category, distance } = req.body; // Changed from req.query to req.body
-
+  const { place, category, distance } = req.body;
   console.log('Received request:', { place, category, distance });
 
   try {
@@ -34,7 +33,7 @@ const getNearByPlaces = async (req, res) => {
 
     const lat = placpoint.lat;
     const lon = placpoint.lng;
-    
+
     const query = `
       [out:json][timeout:25];
       (
@@ -56,25 +55,36 @@ const getNearByPlaces = async (req, res) => {
     );
 
     const allPlaces = response.data.elements;
-    console.log(allPlaces);
+    console.log('All places:', allPlaces);
+
     const parsedPlaces = allPlaces.map((place) => ({
       id: place.id,
       lat: place?.lat,
       lon: place?.lon,
-
-       allInfo:place.tags
+      allInfo: place.tags
     }));
-    // console.log(parsedPlaces);
-    if( Array.isArray(parsedPlaces)){
-      res.json(parsedPlaces.length > 0 ? parsedPlaces : []);
-     }
-   
+
+    console.log('Parsed places:', parsedPlaces);
+
+    if (Array.isArray(parsedPlaces)) {
+      const responseData = {
+        success: true,
+        data: parsedPlaces.length > 0 ? parsedPlaces : []
+      };
+      console.log('Sending response:', responseData);
+      res.json(responseData);
+    } else {
+      throw new Error("Unexpected response format");
+    }
 
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ 
-      error: error || "Failed to fetch nearby places" 
-    });
+    console.error("Error in getNearByPlaces:", error);
+    const errorResponse = {
+      success: false,
+      error: error.message || "Failed to fetch nearby places"
+    };
+    console.log('Sending error response:', errorResponse);
+    res.status(400).json(errorResponse);
   }
 };
 

@@ -26,7 +26,7 @@ const Map = () => {
   const routepath = useSelector((state) => state.position.routepath);
   const distance = useSelector((state) => state.position.distance);
   const time = useSelector((state) => state.position.time);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [socketError, setSocketError] = useState(null);
   const dispatch = useDispatch();
   const [eachSteps, setEachSteps] = useState([]);
   const [start,setStart] = useState({});
@@ -40,6 +40,9 @@ const Map = () => {
   const API_KEY = 'G7qsLIpGIXTyp6eq1Xa8wTLEyrvTiYVs'; // 
   const [active,setActive] = useState(null);
   const navigate = useNavigate();
+  const [errorBox,setErrorBox] = useState(true)
+  const [error,setError] =useState(null)
+
   const handleSearch = async (query) => {
     if (!query) {
       setSearchResults([]);
@@ -110,17 +113,14 @@ const Map = () => {
             token:token
           }
          })
-     socket.on('authenticationError',(err)=>{
-       console.log(err.error);
-       <p style={{color:"red",fontSize:"16px",position:"fixed",zIndex:1000}}>{err.error} </p>
-     })
+         socket.on("connect_error", (err) => {
+          setSocketError(err.message); 
+          alert(`Connection Error: ${err.response.isValidStart.error}`);
+        });
         if(isValidStart && isValidEnd){
           socket.emit("updateDestinations", {startPoint, endPoint,travelOption});
         }
-        socket.on("invalid",(error)=>{
-          console.log(error.error);
-          <p style={{position:"fixed",zIndex:2000}}>{error.error}</p>
-        })
+        
           socket.on("routeUpdate", (response) => {
             console.log("Response data:", response);
             if (response) {
@@ -147,16 +147,24 @@ const Map = () => {
             }
           });
           socket.on("error", (error) => {
-            console.error("Error fetching route:", error.error);
+           setError("place not found");
+           setErrorBox(true);
             dispatch(setRoutepath([])); 
           });
         }
-     
         catch (error) {
-          console.error("Error fetching route:", error);
+          if(error.response.status===400){
+            setError("Pls authenticate");
             setTimeout(() => {
               navigate("/signin");
-            }, 3000); // Redirect after 3 seconds
+            }, 3000); 
+          }
+          else{
+            socket.on("not-found",(error)=>{
+              console.log(error);
+    
+            })
+          }
       }
     }
     useEffect(() => {
@@ -168,6 +176,17 @@ const Map = () => {
     
     <div className="main">
       <NavBar/>
+      {error && (
+           
+           <div className={`box ${errorBox ? "show" : "close"}`} >
+             {
+               console.log(errorBox)
+             }
+           <p>{typeof error === 'object' ? JSON.stringify(error) : error}</p>
+           <button className="box-btn" onClick={()=>setErrorBox(false)} >❌</button>
+         
+           </div>
+         )}
       <div className="container">
     <div className="startPoint">
      
@@ -184,7 +203,6 @@ const Map = () => {
       <div className="endPoint">
       
         <input
-         
           type="text"
           name="endPlace"
           value={endPoint}
@@ -227,14 +245,15 @@ const Map = () => {
           </motion.div>
         )}
         </div>
-        <div>
-      {errorMessage && <div className="error-alert animated-alert">{errorMessage}</div>}
-      {/* Other UI elements */}
-    </div>
         <div className="sidebar">
         <Sidebar  travelOption={travelOption} eachSteps={eachSteps} setHoveredSegment={setHoveredSegment} />
         </div>
-
+      
+    {socketError && (
+      <div style={{ color: "red", fontSize: "16px",zIndex:2000 }}>{socketError}</div>
+    )}
+   
+  
        <p>Distance: {(distance / 1000).toFixed(2)} km</p>
        <p>Time: {Math.round(time/3600)}hrs </p>
        <div className="map">

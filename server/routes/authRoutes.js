@@ -30,7 +30,7 @@ router.post("/register", async (req, res) => {
         userId: newUser._id,
       },
       "123abc",
-      { expiresIn: "1hr" }
+      { expiresIn: "1d" }
     );
     
     return res.status(201).json({ status: "success", user: newUser, token });

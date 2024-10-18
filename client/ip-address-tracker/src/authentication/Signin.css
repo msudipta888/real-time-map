@@ -186,6 +186,7 @@ body {
   }
   .login{
    width: 320px;
+   height: 440px;
    margin-right: 20px;
   }
 
@@ -194,9 +195,9 @@ body {
   }
   .eye-icon-password {
     position: absolute;
-    top: 53.5%;
+    top: 49.5%;
   right: 120.6px;
-  bottom: 43%;
+  bottom: 47%;
     font-size: 20px;
     cursor: pointer;
     color: #888;

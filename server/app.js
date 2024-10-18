@@ -8,7 +8,7 @@ const app = express();
 const { stringify } = require("querystring");
 const { getNearByPlacesRoute } = require("./router");
 const mongoose  = require("mongoose");
-
+const User = require('./model/userModel');
 const jwt = require('jsonwebtoken');
 
 mongoose
@@ -122,6 +122,27 @@ const getRoutes = async (startPlace, endPlace, travelOption) => {
 };
 
 //main
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth.token;
+    if (!token) {
+      return next(new Error("Token is missing"));
+    }
+
+    const decoded = jwt.verify(token, "123abc");
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      console.log("User not found for ID:", decoded.userId);
+      return next(new Error("Unauthorized: User not found"));
+    }
+
+    next();
+  } catch (error) {
+    console.error("Error during authentication:", error);
+    return next(new Error("Authentication failed"));
+  }
+});
 
 io.on("connection", (socket) => {
   console.log("connection established");
@@ -137,6 +158,11 @@ io.on("connection", (socket) => {
 
       const startPlace = await getLatLng(startPoint);
       const endPlace = await getLatLng(endPoint);
+      if((startPlace || endPlace) instanceof Error){
+         socket.emit("not-found", {
+          error: "Failed to get latlng for one of the points",
+          });
+      }
      console.log(startPlace);
       const response = await getRoutes(startPlace, endPlace, travelOption);
       const routeData = {

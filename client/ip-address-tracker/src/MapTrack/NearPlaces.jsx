@@ -77,8 +77,9 @@ const NearPlaces = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const searchTimeoutRef = useRef(null);
   const API_KEY = "G7qsLIpGIXTyp6eq1Xa8wTLEyrvTiYVs";
-  const [errorMessage, setErrorMessage] = useState('');
+const [error,setError] =useState(null)
   const navigate = useNavigate();
+  const [errorBox,setErrorBox] = useState(true)
   const fetchNearbyPlaces = useCallback(async (place, category, distance) => {
     if (!place) return;
     dispatch({ type: actions.SET_LOADING, payload: true });
@@ -91,15 +92,30 @@ const NearPlaces = () => {
           }
         }
       );
-    
+     
       dispatch({ type: actions.SET_PLACES, payload: data });
-    } catch (error) {
-      alert(error.message)
-     setTimeout(()=>{
-      navigate('/signin')
-     },1000)
-    dispatch({ type: actions.SET_LOADING, payload: false })
-  }
+    } 
+    catch (error) {
+      const errorMessage = error.response.data?.error || error.response.data?.message || "An unknown error occurred";
+
+      if (error.response) {
+        if (error.response.status === 401) {
+          setError("Authentication failed. Redirecting to sign in...");
+          setTimeout(() => {
+            navigate('/signin');
+          }, 3000);
+        } else {
+          setError((typeof error.response.data.error === 'string' &&  error.response.data.error!==null)
+            ? 
+            (error.response.data.error) : "Place not found");
+        }
+      } else if (error.request) {
+        setError("No response received from server. Please try again.");
+      } 
+      setErrorBox(true);
+    } finally {
+      dispatch({ type: actions.SET_LOADING, payload: false });
+    } 
   }, []);
 
   useEffect(() => {
@@ -176,6 +192,17 @@ const NearPlaces = () => {
   return (
         <div className="near-places-container">
           <NavBar/>
+          {error && (
+           
+        <div className={`box ${errorBox ? "show" : "close"}`} >
+          {
+            console.log(errorBox)
+          }
+        <p >{typeof error === 'object' ? JSON.stringify(error) : error}</p>
+        <button onClick={()=>setErrorBox(false)} >❌</button>
+      
+        </div>
+      )}
       <motion.div 
         className="search-container"
         initial={{ y: -100 }}
@@ -244,10 +271,6 @@ const NearPlaces = () => {
           <option value="800">800M</option>
         </motion.select>
       </motion.div>
-      <div className="error">
-      {errorMessage && <div className="error-alert animated-alert">{errorMessage}</div>}
-      {/* Other UI elements */}
-    </div>
       {state.isLoading && (
         <motion.div 
           className="loading-overlay"
@@ -334,6 +357,7 @@ const NearPlaces = () => {
           </motion.div>
         )}
       </AnimatePresence>
+    
     </div>
   );
 };
