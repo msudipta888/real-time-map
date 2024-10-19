@@ -26,7 +26,6 @@ const Map = () => {
   const routepath = useSelector((state) => state.position.routepath);
   const distance = useSelector((state) => state.position.distance);
   const time = useSelector((state) => state.position.time);
-  const [socketError, setSocketError] = useState(null);
   const dispatch = useDispatch();
   const [eachSteps, setEachSteps] = useState([]);
   const [start,setStart] = useState({});
@@ -114,29 +113,29 @@ const Map = () => {
           }
          })
          socket.on("connect_error", (err) => {
-          setSocketError(err.message); 
-          alert(`Connection Error: ${err.response.isValidStart.error}`);
+          setError("Pls login");
+            setTimeout(() => {
+              navigate("/signin");
+            }, 1000); 
         });
         if(isValidStart && isValidEnd){
           socket.emit("updateDestinations", {startPoint, endPoint,travelOption});
         }
         
           socket.on("routeUpdate", (response) => {
-            console.log("Response data:", response);
+           
             if (response) {
               setEachSteps(response.instructions); 
               dispatch(setTime(response.time));
               dispatch(setDistance(response.distance));
               setStart({ lat: response.startPlace.lat, lng: response.startPlace.lng });
               setEnd({ lat: response.endPlace.lat, lng: response.endPlace.lng });
-              console.log("Start coordinates set:", start);
-              console.log("End coordinates set:", end);
             
               const decodedPath = response.points;
               if (Array.isArray(decodedPath) && decodedPath.length > 0) {
                 const path = decodedPath.map((val) => [val.latitude, val.longitude]);
                 dispatch(setRoutepath(path));
-                console.log("Route paths are: ", path);
+              
               } else {
                 console.error("No route found");
                 dispatch(setRoutepath([]));
@@ -153,18 +152,11 @@ const Map = () => {
           });
         }
         catch (error) {
-          if(error.response.status===400){
-            setError("Pls authenticate");
-            setTimeout(() => {
-              navigate("/signin");
-            }, 3000); 
-          }
-          else{
-            socket.on("not-found",(error)=>{
-              console.log(error);
+          socket.on("not-found",(error)=>{
+              setError(error);
     
             })
-          }
+          
       }
     }
     useEffect(() => {
@@ -249,9 +241,6 @@ const Map = () => {
         <Sidebar  travelOption={travelOption} eachSteps={eachSteps} setHoveredSegment={setHoveredSegment} />
         </div>
       
-    {socketError && (
-      <div style={{ color: "red", fontSize: "16px",zIndex:2000 }}>{socketError}</div>
-    )}
    
   
        <p>Distance: {(distance / 1000).toFixed(2)} km</p>

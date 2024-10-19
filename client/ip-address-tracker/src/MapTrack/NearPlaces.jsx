@@ -198,8 +198,8 @@ const [error,setError] =useState(null)
           {
             console.log(errorBox)
           }
-        <p >{typeof error === 'object' ? JSON.stringify(error) : error}</p>
-        <button onClick={()=>setErrorBox(false)} >❌</button>
+        <p >{typeof error === 'object' ? (error) : error}</p>
+        <button onClick={()=>setErrorBox(false)} className="box-btn" >❌</button>
       
         </div>
       )}
