@@ -92,12 +92,12 @@ const [error,setError] =useState(null)
           }
         }
       );
-     
-      dispatch({ type: actions.SET_PLACES, payload: data });
+      dispatch({ type: actions.SET_PLACES, payload: data.data });
     } 
     catch (error) {
+      console.log(err.response);
       const errorMessage = error.response.data?.error || error.response.data?.message || "An unknown error occurred";
-
+      
       if (error.response) {
         if (error.response.status === 401) {
           setError("Authentication failed. Redirecting to sign in...");
