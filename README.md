@@ -115,14 +115,13 @@ server/ # Backend (Node.js + Express) ├── controllers/ # Business logic an
    npm run start
 ## Installation
 
-### Backend   
-Navigate to the client directory:
-  ```bash
-     cd client/ip-address-tracker
+### Client   
+2. Navigate to the client directory:
+   ```bash
+       cd client/ip-address-tracker
         Install frontend dependencies:
-   npm install
-  Run the development server:
-  npm run dev
+       npm install
+   
+      npm run dev
 Contributing:
-
 This `README.md` provides a clear overview of the project, including installation instructions, features, the tech stack, and deployment info. Let me know if you need any changes!
