@@ -1,5 +1,5 @@
 # real-time-map
-# Map Explorer
+# Mapquestorapp
 
 Map Explorer is a web application that allows users to find routes between two locations and explore nearby places of interest. It uses real-time data and provides an interactive map interface for seamless navigation and location discovery.
 
