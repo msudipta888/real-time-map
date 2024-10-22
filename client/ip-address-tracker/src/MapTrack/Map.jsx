@@ -144,27 +144,14 @@ const Map = () => {
         setError("No instructions found in the response");
         setEachSteps([]);
       }
-    
     }
     catch(error){
       if(error.response){
       if(error.response.status===401){
-       try {
-        const newToken = await axios.post("https://real-time-map-wwf8.onrender.com/refresh-token/generate",
-          {},
-       {   withCredentials:true}
-        )
-        const accessToken = newToken.data.accessToken;
-        localStorage.setItem("token",accessToken);
-        console.log("new token: ",accessToken);
-       return mapRouting(startPoint,endPoint,travelOption);
-       } catch (error) {
         setError("Session expired. Please log in again.")
         setTimeout(()=>{
          navigate("/signin")
         },5000)
-       }
-        navigate("/signin")
       }else {
         setError(( error.response.data)
           ? 
