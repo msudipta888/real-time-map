@@ -28,10 +28,7 @@ mongoose
   });
 
   
-app.use((req, res, next) => {
-  console.log(`CORS headers: ${res.get('Access-Control-Allow-Origin')}`);
-  next();
-});
+app.use(cors());
 
 app.use(
  cors({
