@@ -114,7 +114,7 @@ const Map = () => {
   const mapRouting= async(startPoint,endPoint,travelOption) => {
      
   try{
-    const response = await axios.post("http://localhost:5000/map/routing",{
+    const response = await axios.post("https://real-time-map-wwf8.onrender.com/map/routing",{
       startPoint,
       endPoint,
       travelOption
@@ -150,7 +150,7 @@ const Map = () => {
       if(error.response){
       if(error.response.status===401){
        try {
-        const newToken = await axios.post("http://localhost:5000/refresh-token/generate",
+        const newToken = await axios.post("https://real-time-map-wwf8.onrender.com/refresh-token/generate",
           {},
        {   withCredentials:true}
         )
