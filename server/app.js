@@ -1,200 +1,62 @@
 const express = require("express");
 const { createServer } = require("http");
-const socketIo = require("socket.io");
+ const socketIo = require("socket.io");
 const cors = require("cors");
-const axios = require("axios"); // Use axios for consistency
-require('dotenv').config();
+require("dotenv").config();
 const app = express();
-const { stringify } = require("querystring");
-const { getNearByPlacesRoute } = require("./router");
-const mongoose  = require("mongoose");
-const User = require('./model/userModel');
-const jwt = require('jsonwebtoken');
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+ const {nearBy,Route, newAccessToken} = require('./router')
 
+const server = createServer(app);
 mongoose
   .connect(process.env.MONGOOSE_URI, {
-    useNewUrlParser: true,  
-    useUnifiedTopology: true,  
-    serverSelectionTimeoutMS: 50000,  
-    socketTimeoutMS: 60000, 
-    connectTimeoutMS: 30000  
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 50000,
+    socketTimeoutMS: 60000,
+    connectTimeoutMS: 30000,
   })
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log("Connected to MongoDB");
+    server.listen(process.env.PORT, () => {
+      console.log(`Server is running on port ${process.env.PORT}`);
+    });
   })
   .catch((err) => {
-    console.error('Failed to connect to MongoDB:', err.message);
+    console.error("Failed to connect to MongoDB:", err.message);
   });
 
 // Middleware
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
+    credentials: true,
   })
 );
 app.use(express.json());
-
-const server = createServer(app);
-
+app.use(cookieParser())
 const io = socketIo(server, {
   cors: {
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
-
-
-const tomtomApiKey = "9SfcvfCOKlu6AwseMQggkQrwtHkqewQs"; 
-
-const getLatLng = async (place) => {
-  try {
-    const response = await axios.get(
-      "https://nominatim.openstreetmap.org/search",
-      {
-        params: {
-          q: place,
-          format: "json",
-        },
-      }
-    );
-
-    if (response.data && response.data.length > 0) {
-      const { lat, lon } = response.data[0];
-      return { lat: parseFloat(lat), lng: parseFloat(lon) };
-    } else {
-      throw new Error("Place not found");
-    }
-  } catch (error) {
-    console.error("Error in getLatLng:", error);
-    throw new Error("Failed to retrieve coordinates");
-  }
-};
-
-const getRoutes = async (startPlace, endPlace, travelOption) => {
-  const query = {
-    key: tomtomApiKey,
-    maxAlternatives: 1,
-    alternativeType: "betterRoute",
-    traffic: true,
-    travelMode: travelOption,
-    instructionsType: "text",
-  };
-  const midlat = (startPlace.lat+endPlace.lat)/2;
-  const midlng = (endPlace.lng+endPlace.lng)/2;
-  try {
-    const response = await axios.post(
-      `https://api.tomtom.com/routing/1/calculateRoute/${startPlace.lat},${
-        startPlace.lng
-      }:${endPlace.lat},${endPlace.lng}/json?${stringify(query)}`,
-      {
-        avoidAreas: {
-          rectangles: [
-            {
-              northEastCorner: {
-                latitude: midlat+ 0.1,
-                longitude: midlng + 0.1,
-              },
-              southWestCorner: {
-                latitude: midlat- 0.1,
-                longitude: midlng- 0.1,
-              },
-            },
-          ],
-        },
-        supportingPoints: [
-          {
-            latitude: startPlace.lat,
-            longitude: startPlace.lng,
-          },
-          {
-            latitude: endPlace.lat,
-            longitude: endPlace.lng,
-          },
-        ],
-      }
-    );
-  
-    return response.data.routes[0];
-  } catch (error) {
-    console.log("Error in getRoutes:", error.response?.data || error.message);
-    throw new Error("failed to retrive routes");
-  }
-};
-
-//main
-io.use(async (socket, next) => {
-  try {
-    const token = socket.handshake.auth.token;
-    if (!token) {
-      return next(new Error("Token is missing"));
-    }
-
-    const decoded = jwt.verify(token, "123abc");
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      console.log("User not found for ID:", decoded.userId);
-      return next(new Error("Unauthorized: User not found"));
-    }
-
-    next();
-  } catch (error) {
-    console.error("Error during authentication:", error);
-    return next(new Error("Authentication failed"));
-  }
-});
-
 io.on("connection", (socket) => {
-  console.log("connection established");
-
-  socket.on("updateDestinations", async (data) => {
-    try {
-      const { startPoint, endPoint, travelOption } = data;
-      if (!startPoint || !endPoint) {
-        return socket.emit("invalid", {
-          error: "Missing startPoint or endPoint",
-        });
-      }
-
-      const startPlace = await getLatLng(startPoint);
-      const endPlace = await getLatLng(endPoint);
-      if((startPlace || endPlace) instanceof Error){
-         socket.emit("not-found", {
-          error: "Failed to get latlng for one of the points",
-          });
-      }
-     console.log(startPlace);
-      const response = await getRoutes(startPlace, endPlace, travelOption);
-      const routeData = {
-        startPlace,
-        endPlace,
-        instructions: response.guidance.instructions,
-        points: response.legs[0].points,
-        time: response.summary.travelTimeInSeconds,
-        distance: response.summary.lengthInMeters,
-        trafficDelay: response.summary.trafficDelayInSeconds,
-        sections: response.sections[0],
-      };
-
-      socket.emit("routeUpdate", routeData);
-    } catch (error) {
-      console.error("Error fetching route:", error);
-      socket.emit("error", { error });
-      
-    }
+  console.log("connection established");  
+ socket.on("userlocation", (data) => {
+    socket.broadcast.emit("recieve-location", { id: socket.id, data });
   });
-    // Handle location updates
-    socket.on("userlocation", (data) => {
-      console.log(`User location update from ${socket.id}:`, data);
-      // Broadcast user location to others
-      socket.broadcast.emit("recieve-location", { id: socket.id, data });
-    });
 });
+ 
 
-
-app.use("/nearby-places", getNearByPlacesRoute);
-app.use('/users',require('./routes/authRoutes'));
-
-// Server start
-const PORT = 3001;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.use((req, res, next) => {
+  console.log(`Request received: ${req.method} ${req.url}`);
+  next();
+});
+app.use("/refresh-token",newAccessToken);
+app.use("/map",Route)
+app.use("/nearby-places", nearBy);
+app.use("/users", require("./routes/authRoutes"));

@@ -3,6 +3,7 @@ const router = express.Router();
 const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+require('dotenv').config();
 router.post("/register", async (req, res) => {
   console.log(req.body); 
   try {
@@ -29,8 +30,8 @@ router.post("/register", async (req, res) => {
       {
         userId: newUser._id,
       },
-      "123abc",
-      { expiresIn: "1d" }
+      process.env.SECRET_KEY,
+      { expiresIn: "10d" }
     );
     
     return res.status(201).json({ status: "success", user: newUser, token });
@@ -56,14 +57,25 @@ router.post("/login", async (req, res) => {
           {
             userId: user._id
           },
-          "123abc",
-          { expiresIn: "1hr" }
+          process.env.SECRET_KEY,
+          { expiresIn: "2min" }
         );
-       
+        const refreshToken = jwt.sign({
+          userId: user._id
+        },
+        process.env.REFRESH_SECRET_KEY,
+       {expiresIn:"7d"}
+      )
+       res.cookie('refreshToken',refreshToken,{
+        httpOnly:true,
+        secure:false,
+        sameSite:'strict',
+        maxAge:7*24*60*60*1000
+       })
+
         return res.status(200).json({ status: "success", token });
         
       } else {
-        console.log('invalid pass')
         return res.status(400).json({ message: "Incorrect password" });
       }
     }

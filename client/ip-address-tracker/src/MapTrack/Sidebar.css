@@ -141,29 +141,29 @@ p {
   }
   
   .sidebar.open {
-    margin-top: 69px;
-   left: 15px;
+    margin-top: 79px;
+   left: 325px;
     height: 420px;
     width: 45%;
   }
   
   .toggle-btn {
-    top: 100px;
-    left: 20px;
+    top: 170px;
+    right: 20px;
   }
 }
  @media (max-width:450px){
    .sidebar.open{
    width: 56%;
-   margin-top: 69px;
-   left: 15px;
+   margin-top: 79px;
+   left: 175px;
     height: 420px;
     overflow-y: auto;
     overflow-x: hidden;
   }
   .toggle-btn {
-    top: 120px;
-    left: 13px;
+    top: 159px;
+    right: 11px;
   }
  }
 

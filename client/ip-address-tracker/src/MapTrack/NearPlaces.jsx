@@ -85,32 +85,46 @@ const [error,setError] =useState(null)
     dispatch({ type: actions.SET_LOADING, payload: true });
     try {
       const { data } = await axios.post(
-        "https://real-time-map-6jrp.onrender.com/nearby-places/location",
+        "http://localhost:5000/nearby-places/location",
         { place: place.address, category, distance },{
           headers:{
             "auth-token":localStorage.getItem("token"),
           }
         }
       );
-      dispatch({ type: actions.SET_PLACES, payload: data.data });
+      console.log(data);
+      dispatch({ type: actions.SET_PLACES, payload: data });
+      if(Array.isArray(data.data) && data.data.length===0){
+        setError(`${category} is not aviable in  ${distance}m `)
+        setErrorBox(true);
+      }
     } 
     catch (error) {
-      console.log(err.response);
       const errorMessage = error.response.data?.error || error.response.data?.message || "An unknown error occurred";
       
       if (error.response) {
         if (error.response.status === 401) {
-          setError("Authentication failed. Redirecting to sign in...");
-          setTimeout(() => {
-            navigate('/signin');
-          }, 3000);
+          try {
+            const newToken = await axios.post("http://localhost:5000/refresh-token/generate",
+              {},
+           {   withCredentials:true}
+            )
+            const {accessToken} = newToken.data;
+            localStorage.setItem("token",accessToken);
+           return fetchNearbyPlaces(place, category, distance);
+           } catch (error) {
+            setError("Session expired. Please log in again.")
+            setTimeout(()=>{
+             navigate("/signin")
+            },1000)
+           }
         } else {
-          setError((typeof error.response.data.error === 'string' &&  error.response.data.error!==null)
+          setError((typeof error.response.data)
             ? 
-            (error.response.data.error) : "Place not found");
+            (error.response.data.message) : "Place not found");
         }
       } else if (error.request) {
-        setError("No response received from server. Please try again.");
+        setError("No response received from server. Please try again later.");
       } 
       setErrorBox(true);
     } finally {

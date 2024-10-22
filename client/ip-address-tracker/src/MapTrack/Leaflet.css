@@ -1,5 +1,4 @@
 /* Leaflet.css */
-
 .leaflet-main {
   position: relative;
   width: 100%;
@@ -13,76 +12,37 @@
   height: 100%;
   scrollbar-width: none;
 }
-.user-location-container {
-  position: fixed;
-  top: 20px;
-  right: 50px;
-  z-index: 1000;
-}
-/* Hide the default select box but keep it functional */
-.custom-select select {
-  appearance: none;
-  -webkit-appearance: none; /* For Safari */
-  -moz-appearance: none; /* For Firefox */
-  border: none;
-  background: transparent;
-  font-size: 12px; /* Hide the text */
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  cursor: pointer;
-  opacity: 0; /* Make the select invisible */
-}
 
-/* Custom icon for the select box */
-.custom-select {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  padding: 10px;
-  border-radius: 3px;
- 
-  width: 40px;
-  height: 40px;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-}
 
-/* Travel mode positioning */
 .travelmode {
-  margin-top: 45px;
-  right: 70px;
   position: absolute;
+  top: 20px;
+ margin-left: 90%;
   z-index: 1000;
-  border-bottom: 0.4px solid black;
+  cursor: pointer;
 }
 
-/* Map type positioning */
 .maptype {
-  margin-top: 85px;
-  right: 70px;
   position: absolute;
+  top: 60px;
+ margin-left: 87%;
   z-index: 1000;
+ cursor: pointer;
 }
 
-/* Style when hovering over the custom icon */
-.custom-select:hover {
-  background-color: #3498db;
+ select option {
+ width: 100%;
+  background-color: white;
+  color: black;
 }
 
-.custom-select:hover .fa-icon {
-  color: rgb(23, 22, 22);
+/* Hover effect for options */
+ select option:hover {
+  background-color: #f0f0f0;
 }
 
 
-.travelmode select:hover,
-.maptype select:hover {
-  border-color: #007bff;
-}
+
 
 .custom-popup {
   background-color: #ffffff;
@@ -94,128 +54,59 @@
   color: #333;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-.leaflet-left{
+
+.leaflet-left {
   left: 1480px;
 }
-.leaflet-top{
+
+.leaflet-top {
   top: -8px;
 }
-.user-location-button {
-  position: fixed;
-  margin-top: 128px;
-  bottom: 20px;
-  right: 40px;
-  z-index: 1000;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
 
-.user-location-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-@media (max-width: 1024px) {
-  .custom-select {
-    padding: 0.4rem;
+
+@media (max-width: 700px) {
+  .travelmode select{
+   margin-left: -44px;
+  }
+ .travelmode select option{
+  visibility: collapse;
+ }
+  .maptype {
+    right: 5px;
+   top: 100px;
   }
   
-  select {
-    font-size: 14px;
+  .custom-select select:focus {
+    position: relative;
+    z-index: 1001;
   }
-}
-@media (max-width: 768px) {
-  .travelmode,
-  .maptype {
-    padding: 8px;
-  }
-
-  .travelmode {
-    right: 10px;
-    top: 25px;
-  }
-
-  .maptype {
-    top: 15px;
-    right: 10px;
-  }
-
-  .travelmode select,
-  .maptype select {
-    font-size: 12px;
-  }
-
-  .user-location-button {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-}
-@media (max-width: 700px) {
-  .travelmode,
-  .maptype {
-    padding: 8px;
-  }
-
-  .travelmode {
-    right: 9px;
-    top: 10px;
-  }
-
-  .maptype {
-    top: 10px;
-    right: 9px;
-  }
-
-  .travelmode select,
-  .maptype select {
-    font-size: 12px;
-  }
+ 
 }
 
-.leaflet-main::-webkit-scrollbar{
+.leaflet-main::-webkit-scrollbar {
   display: none;
 }
+
 @media (max-width: 550px) {
-  .custom-select {
-    padding: 0.3rem;
+  .leaflet-left {
+    left: 10px;
   }
-  
-  select {
-    font-size: 12px;
-    padding: 0.2rem;
-  }
-  .travelmode {
-    top: -15px;
-    right: 5px;
-    border-radius: 4px;
-  }
-  
-  .maptype {
-    top: -14.7px;
-    right: 5px;
-    border-radius: 4px;
-  }
-  .leaflet-left{
-    left: 360px
-  }
-  .leaflet-top{
-    top: 2px;
-  }
-}
-@media(max-width:450px){
-  .leaflet-left{
-    left: -450px;
-  }
-  .leaflet-top{
-    top: -80px;
+
+  .leaflet-top {
+    top: 10px;
   }
 }
 
+@media (max-width: 450px) {
+  .leaflet-left {
+    left: 5px;
+  }
+
+  .leaflet-top {
+    top: 5px;
+  }
+}
+.custom-select, .custom-select select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}

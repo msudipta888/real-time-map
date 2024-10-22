@@ -10,14 +10,14 @@ const UserLoc = ({setPlaceName}) => {
   const dispatch = useDispatch();
  const latitude = useSelector(state=>state.position.userlat);
  const longitude = useSelector(state=>state.position.userlon);
-  // Use ref to store the socket instance
   const socketRef = useRef(null);
   const watchIdRef = useRef(null); 
   const [rotating, setRotating] = useState(false);
- const map = useMap()
+  const map = useMap()
   const token = localStorage.getItem("token")
   useEffect(() => {
     try{
+      
     socketRef.current = io('https://real-time-map-6jrp.onrender.com',{
       auth:{
         token:token
@@ -31,7 +31,7 @@ const UserLoc = ({setPlaceName}) => {
     }
   }
     return () => {
-      // Clean up socket connection on component unmount
+    
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
@@ -81,7 +81,7 @@ const UserLoc = ({setPlaceName}) => {
             if (socketRef.current) {
               socketRef.current.emit('userlocation', { lat: latitude, lon: longitude });
             }
-            console.log('latitude: ',latitude + "  " + 'longitude: ',longitude)
+           
             setRotating(true); // Start rotating
 
             // Stop rotating after 3 seconds
@@ -121,13 +121,14 @@ const UserLoc = ({setPlaceName}) => {
     };
   }, []);
   
-
+  
   return (
-    <div>
+    
       <button className={`user-location-button ${rotating ? "rotate":""}`} onClick={userLocTrack}>
       <MyLocationIcon />
+      
       </button>
-    </div>
+   
   );
 };
 

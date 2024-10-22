@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useReducer } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
 import {
   setStartPoint,
   setEndPoint,
@@ -7,7 +8,7 @@ import {
   setRoutepath,
   setTime,
 } from "../redux/CounterSlice";
-import { io } from "socket.io-client";
+
 import "leaflet/dist/leaflet.css";
 import '@tomtom-international/web-sdk-maps/dist/maps.css';
 import { services } from '@tomtom-international/web-sdk-services';
@@ -17,7 +18,9 @@ import './Map.css'
 import Sidebar from "./Sidebar";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
+import axios from "axios";
 
+import TravelModeDropdown from "./TravelModeDropdown";
 
 const Map = () => {
   const [travelOption, setTravelOption] = useState("car"); // Updated travel options for ORS
@@ -31,23 +34,22 @@ const Map = () => {
   const [start,setStart] = useState({});
   const [end,setEnd] = useState({});
   const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const searchTimeoutRef = useRef(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [isValidStart, setIsValidStart] = useState(false); 
   const [isValidEnd, setIsValidEnd] = useState(false);
-  const API_KEY = 'G7qsLIpGIXTyp6eq1Xa8wTLEyrvTiYVs'; // 
+  const API_KEY = '9SfcvfCOKlu6AwseMQggkQrwtHkqewQs'; // 
   const [active,setActive] = useState(null);
   const navigate = useNavigate();
   const [errorBox,setErrorBox] = useState(true)
   const [error,setError] =useState(null)
 
+  const [mapType, setMapType] = useState("osm");
   const handleSearch = async (query) => {
     if (!query) {
       setSearchResults([]);
       return;
     }
-    setIsLoading(true);
     try {
       const response = await services.fuzzySearch({
         key: API_KEY,
@@ -59,9 +61,8 @@ const Map = () => {
         setSearchResults(response.results);
       }
     } catch (error) {
-      console.error('Error during search:', error);
-    } finally {
-      setIsLoading(false);
+      setError('Error during search:', error);
+      setErrorBox(true);
     }
   };
 
@@ -70,27 +71,34 @@ const Map = () => {
     setActive(type)
     if(type === "start"){
     dispatch(setStartPoint(value))
+    setIsValidStart(false);
     }
     else if (type === "end") {
       dispatch(setEndPoint(value));
+      setIsValidEnd(false);
     }
-    setIsValidEnd(false);
+  
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
     searchTimeoutRef.current = setTimeout(() => {
       handleSearch(value);
-    }, 300);
+    }, 200);
   };
   
   const handleResultClick = (result) => {
-    if(startPoint && !isValidStart && active==="start"){ 
-     setIsValidStart(true);     
-      dispatch(setStartPoint(result.address.freeformAddress))
-    } else if(endPoint && !isValidEnd && active==="end")
+    const selectedAddress = result.address.freeformAddress;
+    if(active==="start"){ 
+      if (selectedAddress !== startPoint) {
+        dispatch(setStartPoint(selectedAddress));
+        setIsValidStart(true); 
+      }
+    } else if(active==="end")
     {
-      setIsValidEnd(true);     
-      dispatch(setEndPoint(result.address.freeformAddress))
+      if (selectedAddress !== endPoint) {
+        dispatch(setEndPoint(selectedAddress));
+        setIsValidEnd(true); 
+      }
     }
     setSearchResults([]);
   };
@@ -102,68 +110,79 @@ const Map = () => {
     };
   }, []);
 
-    let socket;
-    const fetchRoute = async () => {
-      const token = localStorage.getItem("token");
-      try {
-
-         socket =io("https://real-time-map-6jrp.onrender.com",{
-          auth:{
-            token:token
-          }
-         })
-         socket.on("connect_error", (err) => {
-          setError("Pls login");
-            setTimeout(() => {
-              navigate("/signin");
-            }, 1000); 
-        });
-        if(isValidStart && isValidEnd){
-          socket.emit("updateDestinations", {startPoint, endPoint,travelOption});
-        }
-        
-          socket.on("routeUpdate", (response) => {
-           
-            if (response) {
-              setEachSteps(response.instructions); 
-              dispatch(setTime(response.time));
-              dispatch(setDistance(response.distance));
-              setStart({ lat: response.startPlace.lat, lng: response.startPlace.lng });
-              setEnd({ lat: response.endPlace.lat, lng: response.endPlace.lng });
-            
-              const decodedPath = response.points;
-              if (Array.isArray(decodedPath) && decodedPath.length > 0) {
-                const path = decodedPath.map((val) => [val.latitude, val.longitude]);
-                dispatch(setRoutepath(path));
-              
-              } else {
-                console.error("No route found");
-                dispatch(setRoutepath([]));
-              }
-            } else {
-              console.error("No instructions found in the response");
-              setEachSteps([]);
-            }
-          });
-          socket.on("error", (error) => {
-           setError("place not found");
-           setErrorBox(true);
-            dispatch(setRoutepath([])); 
-          });
-        }
-        catch (error) {
-          socket.on("not-found",(error)=>{
-              setError(error);
-    
-            })
-          
+   
+  const mapRouting= async(startPoint,endPoint,travelOption) => {
+     
+  try{
+    const response = await axios.post("http://localhost:5000/map/routing",{
+      startPoint,
+      endPoint,
+      travelOption
+    },
+    {
+      headers:{
+        "auth-token":localStorage.getItem("token")
       }
     }
+  );
+      if (response) {
+        setEachSteps(response.data.instructions);
+        dispatch(setTime(response.data.time));
+        dispatch(setDistance(response.data.distance));
+        setStart({ lat: response.data.startPlace.lat, lng: response.data.startPlace.lng });
+        setEnd({ lat: response.data.endPlace.lat, lng: response.data.endPlace.lng });
+
+        const decodedPath = response.data.points;
+        if (Array.isArray(decodedPath) && decodedPath.length > 0) {
+          const path = decodedPath.map((val) => [val.latitude, val.longitude]);
+          dispatch(setRoutepath(path));
+        } else {
+          setError("No route found");
+          dispatch(setRoutepath([]));
+        }
+      } else {
+        setError("No instructions found in the response");
+        setEachSteps([]);
+      }
+    
+    }
+    catch(error){
+      if(error.response){
+      if(error.response.status===401){
+       try {
+        const newToken = await axios.post("http://localhost:5000/refresh-token/generate",
+          {},
+       {   withCredentials:true}
+        )
+        const accessToken = newToken.data.accessToken;
+        localStorage.setItem("token",accessToken);
+        console.log("new token: ",accessToken);
+       return mapRouting(startPoint,endPoint,travelOption);
+       } catch (error) {
+        setError("Session expired. Please log in again.")
+        setTimeout(()=>{
+         navigate("/signin")
+        },5000)
+       }
+        navigate("/signin")
+      }else {
+        setError(( error.response.data)
+          ? 
+          (error.response.data.message) : "Place not found");
+      }
+    }
+  else if(error.request){
+    setError("No response received from server. Please try again later.")
+  }
+ setErrorBox(true);
+    }
+  }
+
     useEffect(() => {
       if (isValidStart && isValidEnd) {
-        fetchRoute();
-      }
-    }, [startPoint, endPoint, travelOption]); 
+       mapRouting(startPoint,endPoint,travelOption);
+    }
+    }, [isValidStart, isValidEnd, startPoint, endPoint, travelOption]);
   return (
     
     <div className="main">
@@ -179,6 +198,8 @@ const Map = () => {
          
            </div>
          )}
+       
+     
       <div className="container">
     <div className="startPoint">
      
@@ -237,12 +258,11 @@ const Map = () => {
           </motion.div>
         )}
         </div>
+       
         <div className="sidebar">
         <Sidebar  travelOption={travelOption} eachSteps={eachSteps} setHoveredSegment={setHoveredSegment} />
         </div>
       
-   
-  
        <p>Distance: {(distance / 1000).toFixed(2)} km</p>
        <p>Time: {Math.round(time/3600)}hrs </p>
        <div className="map">
@@ -254,9 +274,10 @@ const Map = () => {
         setTravelOption={setTravelOption}
         hoveredSegment={hoveredSegment}
         eachSteps={eachSteps}
+        mapType={mapType}
       />
        </div>
-       
+       <TravelModeDropdown travelOption={travelOption} setTravelOption={setTravelOption} mapType={mapType} setMapType={setMapType} />
     </div>
  
    

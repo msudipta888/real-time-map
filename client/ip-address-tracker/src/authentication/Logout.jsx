@@ -14,7 +14,7 @@ const Logout = ({ email }) => {
         navigate('/',{state:{message}});
         localStorage.removeItem('token');
       } catch (err) {
-        console.log(err);
+        alert(err);
       }
     };
 
