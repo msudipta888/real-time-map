@@ -22,7 +22,7 @@ const Signin = ({ setUserEmail }) => {
       const res = await axios.post("https://real-time-map-wwf8.onrender.com/users/login", {
         email,
         password,
-      },
+      });                   
       setUserEmail(email);
      localStorage.setItem("token", res.data.token);
       setTimeout(() => {
