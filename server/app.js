@@ -32,7 +32,7 @@ mongoose
 
 app.use(
   cors({
-    origin: "https://mapquestorapp.netlify.app/",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   })
@@ -40,7 +40,7 @@ app.use(
 
 const io = socketIo(server, {
   cors: {
-    origin: "https://mapquestorapp.netlify.app/",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
