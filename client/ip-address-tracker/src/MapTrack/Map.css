@@ -336,7 +336,7 @@ color: black;
     transform: scale(1.2);
   }
 }
-@media(max-width:350px){
+@media(max-width:380px){
   .container{
     left: 30px;
     top: 75px;
