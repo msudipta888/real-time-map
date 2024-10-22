@@ -82,7 +82,7 @@ const getLatLng = async (place) => {
   
   
 const getRoute= async (req,res)=>{ 
- 
+  console.log("request coming")
   const {startPoint,endPoint,travelOption} = req.body;
    try {
     if(!startPoint || !endPoint){
@@ -104,7 +104,7 @@ const getRoute= async (req,res)=>{
       return res.status(200).json(routeData);
     }
    } catch (error) {
-  
+    console.error(error);
     return res.status(500).json({message: "Failed to retrieve route"});
   
    }
