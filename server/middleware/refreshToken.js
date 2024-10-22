@@ -12,7 +12,7 @@ module.exports = async( req,res)=>{
     const newAccessToken = jwt.sign(
        { userId: decode.UserId},
         process.env.SECRET_KEY,
-        {expiresIn:"2m"}
+        {expiresIn:"1hr"}
     )
     return res.status(200).json({ accessToken: newAccessToken });
 

@@ -27,19 +27,20 @@ mongoose
     console.error("Failed to connect to MongoDB:", err.message);
   });
 
-// Middleware
+  app.use(express.json());
+  app.use(cookieParser())
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   })
 );
-app.use(express.json());
-app.use(cookieParser())
+
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST"],
     credentials: true,
   },
