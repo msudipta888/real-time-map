@@ -85,7 +85,7 @@ const LeafLet = ({
         zoomControl={false}
       >
        
-        {mapType === "OpenStreetMap" ? (
+        {mapType === "osm" ? (
           <>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
