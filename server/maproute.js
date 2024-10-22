@@ -104,7 +104,7 @@ const getRoute= async (req,res)=>{
       return res.status(200).json(routeData);
     }
    } catch (error) {
-    console.error(error);
+    console.error(error.message);
     return res.status(500).json({message: "Failed to retrieve route"});
   
    }
