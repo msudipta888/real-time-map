@@ -93,9 +93,10 @@
     }
 
   }
-@media(max-width:350px){
-  .container{
-    left: 30px;
-    top: 70px;
-  }
+@media (max-width: 370px) {
+    .dropdown-menu {
+        width: 80%;
+        top: 16px;
+        left: -57px;
+    }
 }
