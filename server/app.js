@@ -27,25 +27,31 @@ mongoose
     console.error("Failed to connect to MongoDB:", err.message);
   });
 
-  app.use(express.json());
-  app.use(cookieParser())
+  
+app.use((req, res, next) => {
+  console.log(`CORS headers: ${res.get('Access-Control-Allow-Origin')}`);
+  next();
+});
 
 app.use(
-  cors({
-    origin: "https://mapquestorapp.netlify.app/",
+ cors({
+    origin: "https://mapquestorapp.netlify.app",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
 
 const io = socketIo(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
+ cors({
+    origin: "https://mapquestorapp.netlify.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, 
+  })
 });
+  app.use(express.json());
+  app.use(cookieParser())
 io.on("connection", (socket) => {
   console.log("connection established");  
  socket.on("userlocation", (data) => {
