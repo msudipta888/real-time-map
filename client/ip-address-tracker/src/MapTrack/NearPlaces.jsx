@@ -85,7 +85,7 @@ const [error,setError] =useState(null)
     dispatch({ type: actions.SET_LOADING, payload: true });
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/nearby-places/location",
+        "https://real-time-map-wwf8.onrender.com/nearby-places/location",
         { place: place.address, category, distance },{
           headers:{
             "auth-token":localStorage.getItem("token"),
@@ -105,7 +105,7 @@ const [error,setError] =useState(null)
       if (error.response) {
         if (error.response.status === 401) {
           try {
-            const newToken = await axios.post("http://localhost:5000/refresh-token/generate",
+            const newToken = await axios.post("https://real-time-map-wwf8.onrender.com/refresh-token/generate",
               {},
            {   withCredentials:true}
             )

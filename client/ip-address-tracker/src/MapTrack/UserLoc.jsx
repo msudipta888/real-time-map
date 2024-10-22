@@ -18,7 +18,7 @@ const UserLoc = ({setPlaceName}) => {
   useEffect(() => {
     try{
       
-    socketRef.current = io('https://real-time-map-6jrp.onrender.com',{
+    socketRef.current = io('https://real-time-map-wwf8.onrender.com',{
       auth:{
         token:token
       }

@@ -17,7 +17,7 @@ const Signup = () => {
     e.preventDefault();
     setLoad(true);
     try {
-      const res = await axios.post("https://real-time-map-6jrp.onrender.com/users/register", {
+      const res = await axios.post("https://real-time-map-wwf8.onrender.com/users/register", {
         name,
         email,
         password,
