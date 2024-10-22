@@ -104,20 +104,10 @@ const [error,setError] =useState(null)
       
       if (error.response) {
         if (error.response.status === 401) {
-          try {
-            const newToken = await axios.post("https://real-time-map-wwf8.onrender.com/refresh-token/generate",
-              {},
-           {   withCredentials:true}
-            )
-            const {accessToken} = newToken.data;
-            localStorage.setItem("token",accessToken);
-           return fetchNearbyPlaces(place, category, distance);
-           } catch (error) {
             setError("Session expired. Please log in again.")
             setTimeout(()=>{
              navigate("/signin")
             },1000)
-           }
         } else {
           setError((typeof error.response.data)
             ? 
