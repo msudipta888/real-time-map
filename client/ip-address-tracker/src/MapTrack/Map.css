@@ -339,6 +339,6 @@ color: black;
 @media(max-width:350px){
   .container{
     left: 30px;
-    top: 60px;
+    top: 75px;
   }
 }
