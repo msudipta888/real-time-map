@@ -58,3 +58,8 @@
    z-index: 1000;
   }
 }
+@media(max-width:350px){
+  .user-location-button {
+     margin-left: -1px;
+  }
+}
