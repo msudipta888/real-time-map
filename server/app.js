@@ -32,7 +32,7 @@ mongoose
 
 app.use(
   cors({
-    origin: "*",
+    origin: "https://real-time-d8gh5iowl-sudipta-mondals-projects.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   })
@@ -40,7 +40,7 @@ app.use(
 
 const io = socketIo(server, {
   cors: {
-    origin: "*",
+    origin: "https://real-time-d8gh5iowl-sudipta-mondals-projects.vercel.app",
     methods: ["GET", "POST"],
     credentials: true,
   },
