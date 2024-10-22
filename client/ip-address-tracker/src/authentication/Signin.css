@@ -203,3 +203,9 @@ body {
     color: #888;
   }
 }
+@media(max-width:350x){
+  .eye-icon-password {
+    top:48.5%;
+    right:70px
+  }
+}
