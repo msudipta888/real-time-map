@@ -3,29 +3,24 @@ require("dotenv").config();
 const axios = require("axios"); 
 
 
+
 const getLatLng = async (place) => {
-    try {
-      const response = await axios.get(
-        "https://nominatim.openstreetmap.org/search",
-        {
-          params: {
-            q: place,
-            format: "json",
-          },
-        }
-      );
-  
-      if (response.data && response.data.length > 0) {
-        const { lat, lon } = response.data[0];
-        return { lat: parseFloat(lat), lng: parseFloat(lon) };
-      } else {
-        throw new Error("Place not found");
-      }
-    } catch (error) {
-      console.error("Error in getLatLng:", error);
-      throw new Error("Failed to retrieve coordinates");
+  try {
+    const response = await axios.get(
+      `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(place)}&limit=5&appid=${process.env.TOM_API_KEY}`
+    );
+    
+    if (response.data && response.data.length > 0) {
+      const { lat, lon } = response.data[0];
+      return { lat: parseFloat(lat), lng: parseFloat(lon) };
+    } else {
+      throw new Error("Place not found");
     }
-  };
+  } catch (error) {
+    
+    throw new Error("Failed to retrieve coordinates");
+  }
+};
   
   const getRoutes = async (startPlace, endPlace, travelOption) => {
     const query = {
