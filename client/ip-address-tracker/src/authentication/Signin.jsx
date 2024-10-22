@@ -23,7 +23,6 @@ const Signin = ({ setUserEmail }) => {
         email,
         password,
       },
-      {withCredentials: true});
       setUserEmail(email);
      localStorage.setItem("token", res.data.token);
       setTimeout(() => {
