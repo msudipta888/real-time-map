@@ -9,7 +9,7 @@ const Logout = ({ email }) => {
     const logout = async () => {
       try {
         console.log(email);
-       const response = await axios.post("https://real-time-map-6jrp.onrender.com/users/logout", { email });
+       const response = await axios.post("https://real-time-map-wwf8.onrender.com/users/logout", { email });
        const message = response.data.message;
         navigate('/',{state:{message}});
         localStorage.removeItem('token');
