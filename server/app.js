@@ -5,7 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const mongoose = require("mongoose");
- const {nearBy,Route, newAccessToken} = require('./router')
+ const {nearBy,Route} = require('./router')
 
 const server = createServer(app);
 mongoose
