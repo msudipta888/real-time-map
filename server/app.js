@@ -34,10 +34,10 @@ app.use(
 );
 
 const io = socketIo(server, {
- cors({
+  cors: {
     origin: "https://mapquestorapp.netlify.app",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
+  },
 });
   app.use(express.json());
   app.use(cookieParser())
@@ -48,11 +48,6 @@ io.on("connection", (socket) => {
   });
 });
  
-
-app.use((req, res, next) => {
-  console.log(`Request received: ${req.method} ${req.url}`);
-  next();
-});
 app.use("/map",Route)
 app.use("/nearby-places", nearBy);
 app.use("/users", require("./routes/authRoutes"));
