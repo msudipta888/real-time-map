@@ -286,7 +286,8 @@ body {
   margin-left: 280px;
   text-align: center;
 }
-.leaflet-left {
+
+.leaflet-control-container .leaflet-left {
   left: -70px;
 }
 
