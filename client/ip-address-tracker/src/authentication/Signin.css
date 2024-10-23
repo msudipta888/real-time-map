@@ -105,7 +105,7 @@ body {
 .eye-icon-password {
   position: absolute;
   top: 53.5%;
-  right: 610px;
+  right: 520px;
   bottom: 45%;
   transform: translateY(-50%);
   font-size: 20px;
@@ -172,7 +172,7 @@ body {
   .eye-icon-password {
     position: absolute;
     top: 53.5%;
-  right: 155px;
+  right: 200px;
   bottom: 45%;
     font-size: 20px;
     cursor: pointer;
@@ -195,7 +195,7 @@ body {
   }
   .eye-icon-password {
     position: absolute;
-    top: 49.5%;
+    top:48%;
   right: 120.6px;
   bottom: 47%;
     font-size: 20px;
