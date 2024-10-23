@@ -195,7 +195,9 @@ body {
   background: linear-gradient(#e66465, #9198e5);
 }
 
-
+.leaflet-left{
+  left: -80px;
+}
 .close-btn {
   position: absolute;
   top: 15px;
