@@ -40,7 +40,6 @@ const io = socketIo(server, {
   },
 });
   app.use(express.json());
-  app.use(cookieParser())
 io.on("connection", (socket) => {
   console.log("connection established");  
  socket.on("userlocation", (data) => {
