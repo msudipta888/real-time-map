@@ -3,11 +3,11 @@ require("dotenv").config();
 const axios = require("axios"); 
 
 
-
+const api_key="a39abcfaeb2bbed6ed457aafc62cbf2e";
 const getLatLng = async (place) => {
   try {
     const response = await axios.get(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(place)}&limit=5&appid=${process.env.TOM_API_KEY}`
+      `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(place)}&limit=5&appid=${api_key}`
     );
     
     if (response.data && response.data.length > 0) {
