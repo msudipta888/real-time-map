@@ -10,13 +10,13 @@ router.post("/register", async (req, res) => {
     const { name, email, password } = req.body;
 
     
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await userModel.findOne({ email }).lean();
     if (existingUser) {
       return res.status(409).json({ status: "error", message: "Email already in use" });
     }
      
     
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 8);
 
     
     const newUser = await userModel.create({
@@ -46,7 +46,7 @@ router.post("/login", async (req, res) => {
   console.log(req.body);
   try {
     const { email, password } = req.body;
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email }).lean();
     if (!user) {
       console.log('invalid email')
       return res.status(400).json({ message: "User not found please check your password or email!" });
