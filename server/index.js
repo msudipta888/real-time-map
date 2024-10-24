@@ -1,20 +1,20 @@
 const axios = require("axios");
 require('dotenv').config();
 
+const api_key = "a30da95635e2418da1d035ad84ff72d8";
 const getLatLng = async (place) => {
   try {
     const response = await axios.get(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(place)}&limit=5&appid=${process.env.TOM_API_KEY}`
+      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(place)}&key=${api_key}&limit=4`
     );
-    
-    if (response.data && response.data.length > 0) {
-      const { lat, lon } = response.data[0];
-      return { lat: parseFloat(lat), lng: parseFloat(lon) };
+
+    if (response.data.results && response.data.results.length > 0) {
+      const { lat, lng } = response.data.results[0].geometry;
+      return { lat, lng };
     } else {
       throw new Error("Place not found");
     }
   } catch (error) {
-    
     throw new Error("Failed to retrieve coordinates");
   }
 };
@@ -47,6 +47,7 @@ const getNearByPlaces = async (req, res) => {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
+        timeout: 18000,
       }
     );
 
