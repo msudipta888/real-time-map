@@ -1,23 +1,20 @@
 const { stringify } = require("querystring");
 require("dotenv").config();
 const axios = require("axios"); 
-
-
-const api_key="a39abcfaeb2bbed6ed457aafc62cbf2e";
+const api_key = "a30da95635e2418da1d035ad84ff72d8";
 const getLatLng = async (place) => {
   try {
     const response = await axios.get(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(place)}&limit=5&appid=${api_key}`
+      `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(place)}&key=${api_key}&limit=5`
     );
-    
-    if (response.data && response.data.length > 0) {
-      const { lat, lon } = response.data[0];
-      return { lat: parseFloat(lat), lng: parseFloat(lon) };
+
+    if (response.data.results && response.data.results.length > 0) {
+      const { lat, lng } = response.data.results[0].geometry;
+      return { lat, lng };
     } else {
       throw new Error("Place not found");
     }
   } catch (error) {
-    
     throw new Error("Failed to retrieve coordinates");
   }
 };
@@ -83,8 +80,10 @@ const getRoute= async (req,res)=>{
     if(!startPoint || !endPoint){
       return res.status(400).json({message: "Start and end points are required"})
     }else{
-      const startPlace = await getLatLng(startPoint);
-      const endPlace = await getLatLng(endPoint);
+      const [startPlace, endPlace] = await Promise.all([
+        getLatLng(startPoint),
+        getLatLng(endPoint)
+      ]);
       const response = await getRoutes(startPlace,endPlace,travelOption);
       const routeData = {
         startPlace,
