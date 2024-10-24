@@ -12,9 +12,9 @@ mongoose
   .connect(process.env.MONGOOSE_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 50000,
-    socketTimeoutMS: 60000,
-    connectTimeoutMS: 30000,
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    connectTimeoutMS: 17000,
   })
   .then(() => {
     console.log("Connected to MongoDB");
